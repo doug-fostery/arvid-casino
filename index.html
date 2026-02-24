@@ -348,6 +348,120 @@
       font-size: 20px;
     }
     .sound-toggle.on { border-color: #4ade80; color: #4ade80; }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+        overflow-y: auto;
+      }
+      
+      .casino-lights {
+        height: 5px;
+      }
+      
+      .container {
+        padding: 20px 15px;
+        border-radius: 16px;
+        border-width: 3px;
+      }
+      
+      h1 {
+        font-size: 24px;
+        letter-spacing: 1px;
+      }
+      
+      .subtitle {
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+      
+      .balance {
+        padding: 12px;
+        margin-bottom: 16px;
+      }
+      
+      .balance-amount {
+        font-size: 32px;
+      }
+      
+      .slots-container {
+        padding: 12px;
+        margin-bottom: 16px;
+      }
+      
+      .slots {
+        gap: 6px;
+      }
+      
+      .slot {
+        width: 65px;
+        height: 80px;
+        font-size: 32px;
+        border-width: 3px;
+      }
+      
+      .bet-controls {
+        margin-bottom: 16px;
+      }
+      
+      .bet-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+      }
+      
+      .bet-amount {
+        font-size: 22px;
+        min-width: 80px;
+      }
+      
+      .spin-btn {
+        padding: 16px;
+        font-size: 18px;
+        letter-spacing: 2px;
+      }
+      
+      .result {
+        font-size: 16px;
+        padding: 14px;
+        min-height: 48px;
+      }
+      
+      .arvid-msg {
+        font-size: 12px;
+        padding: 12px;
+        margin-top: 16px;
+      }
+      
+      .stats {
+        font-size: 12px;
+      }
+      
+      .sound-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: 18px;
+      }
+    }
+    
+    /* Touch optimization */
+    @media (hover: none) {
+      .spin-btn:hover {
+        transform: none;
+        box-shadow: 0 6px 0 #c73e54, 0 10px 20px rgba(233, 69, 96, 0.4);
+      }
+      .spin-btn:active {
+        transform: translateY(4px);
+      }
+      .bet-btn:hover {
+        transform: none;
+      }
+      .bet-btn:active {
+        transform: scale(0.95);
+      }
+    }
   </style>
 </head>
 <body>
