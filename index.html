@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arvid's Salary Casino</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: #16213e;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { margin-bottom: 8px; color: #ffd700; }
+    .subtitle { color: #888; margin-bottom: 24px; font-size: 14px; }
+    
+    .balance {
+      background: #0f3460;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .balance-label { font-size: 12px; color: #888; text-transform: uppercase; }
+    .balance-amount { font-size: 36px; font-weight: bold; color: #4ade80; }
+    .balance-amount.negative { color: #f87171; }
+    
+    .slots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .slot {
+      width: 80px;
+      height: 100px;
+      background: #0f3460;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      border: 3px solid #e94560;
+    }
+    
+    .bet-controls { margin-bottom: 20px; }
+    .bet-label { font-size: 14px; color: #aaa; margin-bottom: 8px; }
+    .bet-input { display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .bet-btn {
+      width: 40px; height: 40px; border-radius: 8px; border: none;
+      background: #e94560; color: white; font-size: 20px; cursor: pointer;
+    }
+    .bet-amount { font-size: 24px; font-weight: bold; }
+    
+    .spin-btn {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #e94560, #c73e54);
+      border: none; border-radius: 12px;
+      color: white; font-size: 18px; font-weight: bold;
+      cursor: pointer; transition: transform 0.1s;
+    }
+    .spin-btn:hover { transform: scale(1.02); }
+    .spin-btn:active { transform: scale(0.98); }
+    .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    
+    .result {
+      margin-top: 20px; padding: 16px; border-radius: 12px;
+      font-size: 18px; font-weight: bold;
+      min-height: 56px; display: flex; align-items: center; justify-content: center;
+    }
+    .result.win { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+    .result.lose { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+    .result.neutral { background: #0f3460; color: #aaa; }
+    
+    .arvid-msg {
+      margin-top: 24px; padding: 12px;
+      background: #251838; border-radius: 8px;
+      font-size: 13px; color: #c084fc; font-style: italic;
+    }
+    
+    .stats {
+      margin-top: 20px; display: flex; justify-content: space-around;
+      font-size: 12px; color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎰 Arvid's Salary Casino</h1>
+    <p class="subtitle">Win back your salary (probably not)</p>
+    
+    <div class="balance">
+      <div class="balance-label">Your Salary</div>
+      <div class="balance-amount" id="balance">$1000</div>
+    </div>
+    
+    <div class="slots">
+      <div class="slot" id="slot1">🍒</div>
+      <div class="slot" id="slot2">🍒</div>
+      <div class="slot" id="slot3">🍒</div>
+    </div>
+    
+    <div class="bet-controls">
+      <div class="bet-label">Bet Amount</div>
+      <div class="bet-input">
+        <button class="bet-btn" onclick="adjustBet(-100)">-</button>
+        <span class="bet-amount" id="betAmount">$100</span>
+        <button class="bet-btn" onclick="adjustBet(100)">+</button>
+      </div>
+    </div>
+    
+    <button class="spin-btn" id="spinBtn" onclick="spin()">SPIN!</button>
+    
+    <div class="result neutral" id="result">Place your bet!</div>
+    <div class="arvid-msg" id="arvidMsg">"Let's see if you're a good boy." - Arvid</div>
+    
+    <div class="stats">
+      <span>Spins: <span id="totalSpins">0</span></span>
+      <span>Wins: <span id="totalWins">0</span></span>
+    </div>
+  </div>
+
+  <script>
+    let balance = 1000;
+    let bet = 100;
+    let totalSpins = 0;
+    let totalWins = 0;
+    let spinning = false;
+    
+    const symbols = ['🍒', '🍋', '🍊', '🍇', '💎', '7️⃣'];
+    const symbolWeights = [30, 25, 20, 15, 7, 3];
+    
+    const arvidQuotes = [
+      '"Let\'s see if you\'re a good boy." - Arvid',
+      '"That\'s a salary deduction." - Arvid',
+      '"You need to fill your quota." - Arvid',
+      '"Interesting strategy..." - Arvid',
+      '"The house always wins." - Arvid',
+      '"I live in a rooftop apartment." - Arvid',
+      '"Pretty cool, right?" - Arvid',
+      '"Keep spinning, friend." - Arvid'
+    ];
+    
+    function getSymbol() {
+      const total = symbolWeights.reduce((a, b) => a + b, 0);
+      let random = Math.random() * total;
+      for (let i = 0; i < symbols.length; i++) {
+        random -= symbolWeights[i];
+        if (random <= 0) return symbols[i];
+      }
+      return symbols[0];
+    }
+    
+    function updateDisplay() {
+      document.getElementById('balance').textContent = '$' + balance;
+      document.getElementById('balance').classList.toggle('negative', balance < 0);
+      document.getElementById('betAmount').textContent = '$' + bet;
+      document.getElementById('totalSpins').textContent = totalSpins;
+      document.getElementById('totalWins').textContent = totalWins;
+    }
+    
+    function adjustBet(amount) {
+      if (spinning) return;
+      bet = Math.max(100, bet + amount);
+      updateDisplay();
+    }
+    
+    function spin() {
+      if (spinning) return;
+      if (balance < bet) {
+        document.getElementById('result').textContent = 'Insufficient funds! Ask Arvid for a loan 😅';
+        document.getElementById('result').className = 'result lose';
+        return;
+      }
+      
+      spinning = true;
+      document.getElementById('spinBtn').disabled = true;
+      balance -= bet;
+      totalSpins++;
+      
+      document.getElementById('result').textContent = 'Spinning...';
+      document.getElementById('result').className = 'result neutral';
+      
+      const slotEls = [
+        document.getElementById('slot1'),
+        document.getElementById('slot2'),
+        document.getElementById('slot3')
+      ];
+      
+      let spins = 0;
+      const maxSpins = 20;
+      const interval = setInterval(() => {
+        slotEls.forEach(el => el.textContent = getSymbol());
+        spins++;
+        if (spins >= maxSpins) {
+          clearInterval(interval);
+          finalizeSpin();
+        }
+      }, 100);
+    }
+    
+    function finalizeSpin() {
+      const finalSymbols = [getSymbol(), getSymbol(), getSymbol()];
+      document.getElementById('slot1').textContent = finalSymbols[0];
+      document.getElementById('slot2').textContent = finalSymbols[1];
+      document.getElementById('slot3').textContent = finalSymbols[2];
+
+      // Check for win
+      const allSame = finalSymbols[0] === finalSymbols[1] && finalSymbols[1] === finalSymbols[2];
+      const twoSame = finalSymbols[0] === finalSymbols[1] || finalSymbols[1] === finalSymbols[2] || finalSymbols[0] === finalSymbols[2];
+      
+      if (allSame) {
+        const multiplier = finalSymbols[0] === '7️⃣' ? 10 : finalSymbols[0] === '💎' ? 5 : 3;
+        const win = bet * multiplier;
+        balance += win;
+        totalWins++;
+        document.getElementById('result').textContent = 'YOU WIN $' + win + '!';
+        document.getElementById('result').className = 'result win';
+      } else if (twoSame) {
+        const win = bet;
+        balance += win;
+        totalWins++;
+        document.getElementById('result').textContent = 'Small win! $' + win + ' back';
+        document.getElementById('result').className = 'result win';
+      } else {
+        document.getElementById('result').textContent = 'You lost $' + bet;
+        document.getElementById('result').className = 'result lose';
+      }
+      
+      // Random Arvid quote
+      document.getElementById('arvidMsg').textContent = arvidQuotes[Math.floor(Math.random() * arvidQuotes.length)];
+      
+      updateDisplay();
+      spinning = false;
+      document.getElementById('spinBtn').disabled = false;
+    }
+    
+    updateDisplay();
+  </script>
