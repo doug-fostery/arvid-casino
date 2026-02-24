@@ -551,44 +551,56 @@
     document.addEventListener('touchstart', initAudio, { once: true });
     document.addEventListener('click', initAudio, { once: true });
     
-    function playSound(freq, duration, type = 'square', volume = 0.1) {
-      if (!soundEnabled || !audioCtx) return;
+    function playSound(freq, duration, type = 'square', volume = 0.3) {
+      if (!soundEnabled) return;
       
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      
-      oscillator.frequency.value = freq;
-      oscillator.type = type;
-      
-      gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      
-      oscillator.start(audioCtx.currentTime);
-      oscillator.stop(audioCtx.currentTime + duration);
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.frequency.value = freq;
+        oscillator.type = type;
+        
+        // Higher volume for mobile
+        gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        
+        oscillator.start(audioCtx.currentTime);
+        oscillator.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log('Sound error:', e);
+      }
     }
     
     function playSpinSound() {
-      playSound(200 + Math.random() * 100, 0.1, 'square', 0.05);
+      playSound(300 + Math.random() * 100, 0.08, 'square', 0.2);
     }
     
     function playWinSound() {
-      // Casino win jingle
+      // Casino win jingle - louder
       const notes = [523, 659, 784, 1047];
       notes.forEach((freq, i) => {
-        setTimeout(() => playSound(freq, 0.2, 'sine', 0.15), i * 150);
+        setTimeout(() => playSound(freq, 0.3, 'sine', 0.4), i * 150);
       });
     }
     
     function playLoseSound() {
-      playSound(200, 0.3, 'sawtooth', 0.1);
-      setTimeout(() => playSound(150, 0.3, 'sawtooth', 0.1), 200);
+      playSound(200, 0.4, 'sawtooth', 0.3);
+      setTimeout(() => playSound(150, 0.4, 'sawtooth', 0.3), 250);
     }
     
     function playClickSound() {
-      playSound(800, 0.05, 'sine', 0.1);
+      playSound(800, 0.05, 'sine', 0.3);
     }
     
     function toggleSound() {
