@@ -5,7 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arvid's Salary Casino</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
     body {
       font-family: 'Courier New', monospace;
       background: #0a0a0a;
@@ -16,7 +24,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
     /* Casino lights border */
@@ -353,7 +363,10 @@
     @media (max-width: 480px) {
       body {
         padding: 10px;
-        overflow-y: auto;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
       }
       
       .casino-lights {
